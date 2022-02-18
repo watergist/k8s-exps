@@ -11,8 +11,8 @@ const PORT = "3001"
 func main() {
 	fmt.Println("Started Application")
 
-	http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, Welcome to k8s best manifests practices!")
+	http.HandleFunc("/alive", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Service is live!")
 	})
 
 	fmt.Printf("Starting server at port %v\n", PORT)
