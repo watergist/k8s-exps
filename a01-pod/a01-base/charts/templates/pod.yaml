@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: {{ .Values.expID }}
+  name: pod-exp
+spec:
+  containers:
+    - name: pod-exp
+      image: "watergist/k8s-exps:{{ .Values.expID }}"
