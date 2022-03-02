@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.expName }}
+  name: d{{.Values.version}}
+  labels:
+    app: d{{.Values.version}}
+spec:
+  selector:
+    matchLabels:
+      app: p{{.Values.version}}
+  template:
+    metadata:
+      labels:
+        app: p{{.Values.version}}
+      annotations:
+        app: p{{.Values.version}}
+    spec:
+      containers:
+        - name: exp
+          image: "watergist/k8s-exps:{{ .Values.expName }}"
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+          - name: pod-info
+            mountPath: /config/pod-info
+      volumes:
+        - name: pod-info
+          downwardAPI:
+            items:
+              - path: "labels"
+                fieldRef:
+                  fieldPath: metadata.labels
+              - path: "annotations"
+                fieldRef:
+                  fieldPath: metadata.annotations

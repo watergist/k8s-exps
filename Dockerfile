@@ -6,7 +6,8 @@ RUN go mod download
 
 FROM build-dependencies as copyfiles
 ARG APP_DIR
-COPY $APP_DIR/ ./
+COPY $APP_DIR/ cmd/
+COPY pkg/ pkg/
 RUN find ./ -type f \
     \! -name "*.go" \! -name "*.mod" \! -name "*.sum" \
     -delete
@@ -14,7 +15,7 @@ RUN find ./ -type f \
 FROM build-dependencies as builder
 WORKDIR /code
 COPY --from=copyfiles /code ./
-RUN go build -o /app/exp app.go
+RUN go build -o /app/exp cmd/app.go
 
 FROM ubuntu:20.04
 WORKDIR /wd

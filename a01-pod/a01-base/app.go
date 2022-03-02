@@ -1,24 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+	"watergist/k8s-manifests/pkg/whoami"
 )
 
 const PORT = "3001"
 
 func main() {
-	fmt.Println("Started Application")
-
-	http.HandleFunc("/alive", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Service is live!")
-	})
-
-	fmt.Printf("Starting server at port %v\n", PORT)
-	if err := http.ListenAndServe("localhost:"+PORT, nil); err != nil {
+	log.Println("Started Application")
+	mux := http.NewServeMux()
+	whoami.RegisterEndpoints(mux)
+	if err := http.ListenAndServe("0.0.0.0:"+PORT, mux); err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println("Exited Application")
+	log.Println("Exited Application")
 }
