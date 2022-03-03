@@ -1,4 +1,4 @@
-[ -z $CLUSTER_NAME ] && exit 1
+[ -z $CLUSTER_NAME ] && echo Need a cluster name && exit 1
 # get cidr range
 CIDR=$(docker network inspect kind | jq ".[].Containers | .[] | select(.Name==\"$CLUSTER_NAME-control-plane\") | .IPv4Address " | grep -o -E "[\.0-9\/]*")
 # all ips in the cidr range
