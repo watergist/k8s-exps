@@ -29,9 +29,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: POD_PROPERTIES_PATH
+              value: &propertiesPath /config/pod-info
           volumeMounts:
           - name: pod-info
-            mountPath: /config/pod-info
+            mountPath: *propertiesPath
       volumes:
         - name: pod-info
           downwardAPI:

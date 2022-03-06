@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	"watergist/k8s-manifests/pkg/whoami"
+	"watergist/k8s-manifests/pkg/whoarewe"
 )
 
 const PORT = "3001"
@@ -11,7 +11,7 @@ const PORT = "3001"
 func main() {
 	log.Println("Started Application")
 	mux := http.NewServeMux()
-	whoami.RegisterEndpoints(mux)
+	whoarewe.RegisterEndpoints(mux)
 	if err := http.ListenAndServe("0.0.0.0:"+PORT, mux); err != nil {
 		log.Fatal(err)
 	}

@@ -1,12 +1,13 @@
 [ -z $CLUSTER_NAME ] && echo Need a cluster name && exit 1
+[ -z $IP_SET_NUMBER ] && echo Need a Set-Number for ip range && exit 1
 # get cidr range
 CIDR=$(docker network inspect kind | jq ".[].Containers | .[] | select(.Name==\"$CLUSTER_NAME-control-plane\") | .IPv4Address " | grep -o -E "[\.0-9\/]*")
 # all ips in the cidr range
-# get last 5 lines, in which last line is some arbitrary message, and rest 4 are ips
-nmap -sL -n $CIDR | tail -50 | head -49 | grep -o -E "[\.0-9]*" | tac > ip-available-in-docker-network
+# get last n+1 lines, in which last line is some arbitrary message, and rest n are ips
+nmap -sL -n $CIDR | tail -"$(expr $IP_SET_NUMBER "*" 20 + 1 )" | head -20 | grep -o -E "[\.0-9]*" > ip-available-in-docker-network
 
 # a string having an ip range
-IP_RANGE="$(tail -1 ip-available-in-docker-network )-$(head -1 ip-available-in-docker-network )"
+IP_RANGE="$(head -1 ip-available-in-docker-network )-$(tail -1 ip-available-in-docker-network )"
 
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/master/manifests/namespace.yaml
 kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
@@ -19,4 +20,4 @@ curl https://kind.sigs.k8s.io/examples/loadbalancer/metallb-configmap.yaml > tem
 #https://stackoverflow.com/questions/22960387/what-does-the-comma-in-sed-commands-stand-for
 sed -i "$,/- .*/ s/- .*/- $IP_RANGE/" tempk8.yaml
 kubectl apply -f tempk8.yaml
-rm tempk8.yaml
+rm tempk8.yaml ip-available-in-docker-network
