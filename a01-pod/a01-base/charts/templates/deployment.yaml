@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: {{ .Values.expName }}
-  name: d{{.Values.version}}
+  name: d{{ .Values.version }}{{ (include "getSubset" .) }}
   labels:
     app: d{{.Values.version}}
 spec:
@@ -13,8 +13,12 @@ spec:
     metadata:
       labels:
         app: p{{.Values.version}}
+        version: {{ default "default" .Values.subset  }}
       annotations:
         app: p{{.Values.version}}
+        {{- range $index,$node := (lookup "v1" "Node" "" "").items }}
+        node{{ add $index 1}}: {{ $node.metadata.name }}
+        {{- end }}
     spec:
       containers:
         - name: exp
