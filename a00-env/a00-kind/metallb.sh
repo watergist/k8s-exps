@@ -4,7 +4,7 @@
 CIDR=$(docker network inspect kind | jq ".[].Containers | .[] | select(.Name==\"$CLUSTER_NAME-control-plane\") | .IPv4Address " | grep -o -E "[\.0-9\/]*")
 # all ips in the cidr range
 # get last n+1 lines, in which last line is some arbitrary message, and rest n are ips
-nmap -sL -n $CIDR | tail -"$(expr $IP_SET_NUMBER "*" 20 + 1 )" | head -20 | grep -o -E "[\.0-9]*" > ip-available-in-docker-network
+nmap -sL -n $CIDR | tail -"$(expr $IP_SET_NUMBER "*" 100 + 1 )" | head -100 | grep -o -E "[\.0-9]*" > ip-available-in-docker-network
 
 # a string having an ip range
 IP_RANGE="$(head -1 ip-available-in-docker-network )-$(tail -1 ip-available-in-docker-network )"
