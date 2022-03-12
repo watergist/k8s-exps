@@ -9,9 +9,9 @@ nmap -sL -n $CIDR | tail -"$(expr $IP_SET_NUMBER "*" 20 + 1 )" | head -20 | grep
 # a string having an ip range
 IP_RANGE="$(head -1 ip-available-in-docker-network )-$(tail -1 ip-available-in-docker-network )"
 
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/master/manifests/namespace.yaml
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
 kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/master/manifests/metallb.yaml
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
 
 curl https://kind.sigs.k8s.io/examples/loadbalancer/metallb-configmap.yaml > tempk8.yaml
 
