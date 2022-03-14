@@ -12,7 +12,7 @@ IP_RANGE="$(head -1 ip-available-in-docker-network )-$(tail -1 ip-available-in-d
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
 kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
-
+kubectl label ns metallb-system ip-set=$IP_SET_NUMBER
 curl https://kind.sigs.k8s.io/examples/loadbalancer/metallb-configmap.yaml > tempk8.yaml
 
 ## search from bottom for - .*, at that line replace - .*

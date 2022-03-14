@@ -1,6 +1,0 @@
-{{ if not (lookup "v1" "Namespace" "" .Values.expName) }}
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: {{ .Values.expName }}
-{{end}}
