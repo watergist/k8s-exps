@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.expName }}
+  name: d{{ .Values.version }}{{ (include "getSubset" .) }}
+  labels:
+    app: d{{.Values.version}}
+spec:
+  selector:
+    matchLabels:
+      app: p{{.Values.version}}
+  template:
+    metadata:
+      labels:
+        app: p{{.Values.version}}
+        version: {{ default "default" .Values.subset  }}
+      annotations:
+        app: p{{.Values.version}}
+        {{- range $index,$node := (lookup "v1" "Node" "" "").items }}
+        node{{ add $index 1}}: {{ $node.metadata.name }}
+        {{- end }}
+    spec:
+      containers:
+        - name: exp
+          image: "watergist/k8s-exps:{{ .Values.expName }}"
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_PROPERTIES_PATH
+              value: &propertiesPath /config/pod-info
+          volumeMounts:
+          - name: pod-info
+            mountPath: *propertiesPath
+      volumes:
+        - name: pod-info
+          downwardAPI:
+            items:
+              - path: "labels"
+                fieldRef:
+                  fieldPath: metadata.labels
+              - path: "annotations"
+                fieldRef:
+                  fieldPath: metadata.annotations
