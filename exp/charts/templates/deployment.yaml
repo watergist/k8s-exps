@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ .Values.expName }}
   name: d{{ .Values.version }}{{ (include "getSubset" .) }}
   labels:
     app: d{{.Values.version}}
@@ -22,9 +21,26 @@ spec:
     spec:
       containers:
         - name: exp
-          image: "watergist/k8s-exps:{{ .Values.expName }}"
+          image: "watergist/k8s-exps:base"
+          ports:
+            {{- if .Values.httpTargetPorts }}
+            {{- range $index,$value := regexSplit "~+" .Values.httpTargetPorts -1 }}
+            - containerPort: {{ $value | int }}
+              name: http-{{ $value}}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.httpsTargetPorts }}
+            {{- range $index,$value := regexSplit "~+" .Values.httpsTargetPorts -1 }}
+            - containerPort: {{ $value | int }}
+              name: https-{{ $value }}
+            {{- end }}
+            {{- end }}
           imagePullPolicy: Always
           env:
+            - name: HTTP_PORTS
+              value: {{ .Values.httpTargetPorts  }}
+            - name: HTTPS_PORTS
+              value: {{ .Values.httpsTargetPorts }}
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -38,7 +54,16 @@ spec:
           volumeMounts:
           - name: pod-info
             mountPath: *propertiesPath
+          {{- if .Values.tlsSecret }}
+          - name: tls-secrets
+            mountPath: /config/tls
+          {{- end }}
       volumes:
+        {{- if .Values.tlsSecret }}
+        - name: tls-secrets
+          secret:
+            secretName: {{ .Values.tlsSecret }}
+        {{- end }}
         - name: pod-info
           downwardAPI:
             items:

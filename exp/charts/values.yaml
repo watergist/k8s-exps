@@ -1,3 +1,9 @@
 version: 1
-expName: expNameReplacement
 subset: ""
+httpTargetPorts: ""
+httpsTargetPorts: ""
+
+httpPorts: ""
+httpsPorts: ""
+
+tlsSecret: ""

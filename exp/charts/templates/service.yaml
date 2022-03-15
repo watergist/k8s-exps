@@ -1,17 +1,31 @@
+{{- $httpContainerPorts := regexSplit "~+" .Values.httpTargetPorts -1 }}
+{{- $httpsContainerPorts := regexSplit "~+" .Values.httpsTargetPorts -1 }}
+{{- if or .Values.httpPorts .Values.httpsPorts }}
 apiVersion: v1
 kind: Service
 metadata:
   name: s{{.Values.version}}
-  namespace: {{ .Values.expName }}
   labels:
     app: s{{.Values.version}}
 spec:
   selector:
     app: p{{.Values.version}}
   ports:
+    {{- if .Values.httpPorts }}
+    {{- range $index,$value := regexSplit "~+" .Values.httpPorts -1 }}
     - protocol: TCP
-      port: 80
-      targetPort: 3001
-      name: http-80
+      port: {{ $value | int }}
+      targetPort: {{ index $httpContainerPorts $index }}
+      name: http-{{ $value }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.httpsPorts }}
+    {{- range $index,$value := regexSplit "~+" .Values.httpsPorts -1 }}
+    - protocol: TCP
+      port: {{ $value | int }}
+      targetPort: {{ index $httpsContainerPorts $index }}
+      name: https-{{ $value }}
+    {{- end }}
+    {{- end }}
   type: LoadBalancer
-
+{{- end }}
