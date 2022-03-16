@@ -1,11 +1,13 @@
 package wide
 
 import (
+	"github.com/watergist/k8s-manifests/pkg/whoarewe/listener"
 	"os"
 	"path"
 )
 
 type PodProperties struct {
+	Server      *listener.Listener
 	Name        string
 	Namespace   string
 	Labels      map[string]string
@@ -13,9 +15,13 @@ type PodProperties struct {
 	Error       []error
 }
 
-func GetPodProperties() PodProperties {
+func GetPodProperties(listenerProperties *listener.Listener) PodProperties {
 	var err error
-	podProperties := PodProperties{Name: os.Getenv("POD_NAME"), Namespace: os.Getenv("POD_NAMESPACE")}
+	podProperties := PodProperties{
+		Server:    listenerProperties,
+		Name:      os.Getenv("POD_NAME"),
+		Namespace: os.Getenv("POD_NAMESPACE"),
+	}
 	if proprtiesPath := os.Getenv("POD_PROPERTIES_PATH"); proprtiesPath != "" {
 		podProperties.Labels, err = DrawPodProperties(path.Join(proprtiesPath, "labels"))
 		if err != nil {

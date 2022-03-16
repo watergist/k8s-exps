@@ -3,21 +3,28 @@ package whoareu
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/watergist/k8s-manifests/pkg/whoarewe/listener"
+	"github.com/watergist/k8s-manifests/pkg/whoarewe/whoareu/wide"
 	"log"
 	"net/http"
 	"os"
-	"watergist/k8s-manifests/pkg/whoarewe/whoareu/wide"
 )
 
-func PodName(w http.ResponseWriter, _ *http.Request) {
-	_, err := w.Write([]byte(fmt.Sprintf("I am \"%v\" from \"%v\"\n", os.Getenv("POD_NAME"), os.Getenv("POD_NAMESPACE"))))
+type Server struct {
+	ListenerProperties *listener.Listener
+}
+
+func (s *Server) PodName(w http.ResponseWriter, _ *http.Request) {
+	_, err := w.Write([]byte(fmt.Sprintf(
+		"Serving at %v:%v \"%v\" from \"%v\"\n",
+		s.ListenerProperties.Address, s.ListenerProperties.Port, os.Getenv("POD_NAME"), os.Getenv("POD_NAMESPACE"))))
 	if err != nil {
 		log.Printf("Error: %v\n", err)
 	}
 }
 
-func PodInfo(w http.ResponseWriter, _ *http.Request) {
-	podProperties := wide.GetPodProperties()
+func (s *Server) PodInfo(w http.ResponseWriter, _ *http.Request) {
+	podProperties := wide.GetPodProperties(s.ListenerProperties)
 	podPropertiesBytes, err := json.Marshal(podProperties)
 	if err != nil {
 		writeServerError(w, err, "reading labels", http.StatusNotImplemented)
