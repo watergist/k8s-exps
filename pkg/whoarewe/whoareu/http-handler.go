@@ -25,13 +25,11 @@ func (s *Server) PodName(w http.ResponseWriter, _ *http.Request) {
 
 func (s *Server) PodInfo(w http.ResponseWriter, _ *http.Request) {
 	podProperties := wide.GetPodProperties(s.ListenerProperties)
-	podPropertiesBytes, err := json.Marshal(podProperties)
+	podPropertiesBytes, err := json.MarshalIndent(podProperties, "", "  ")
 	if err != nil {
 		writeServerError(w, err, "reading labels", http.StatusNotImplemented)
 		return
 	}
-	w.Header().Add("a-forwArDed-by", "whoarewe")
-	w.Header().Add("a-forwArDed-by", os.Getenv("POD_NAME"))
 	w.Header().Add("content-type", "application/json")
 	_, err = w.Write(podPropertiesBytes)
 	if err != nil {

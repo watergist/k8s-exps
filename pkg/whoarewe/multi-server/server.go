@@ -50,7 +50,7 @@ func (s *Server) createServer(port string, protocol string) *http.Server {
 		Port:     port,
 		Protocol: protocol,
 	})
-	return &http.Server{Addr: "0.0.0.0:" + port, Handler: mux}
+	return &http.Server{Addr: "0.0.0.0:" + port, Handler: regsiter.EnableDualLogging(mux)}
 }
 
 func (s *Server) RunServers() {

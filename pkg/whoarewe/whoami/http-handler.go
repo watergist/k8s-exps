@@ -7,7 +7,6 @@ import (
 	"github.com/watergist/k8s-manifests/pkg/whoarewe/whoami/wide"
 	"log"
 	"net/http"
-	"os"
 )
 
 type Server struct {
@@ -29,13 +28,11 @@ func (s *Server) RequestIP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) RequestInfo(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("a-forwArDed-by", "whoarewe")
-	w.Header().Add("a-forwArDed-by", os.Getenv("POD_NAME"))
 	w.Header().Add("content-type", "application/json")
 	requestInfo := wide.GenRequestInfo(r)
 	h := w.Header()
 	requestInfo.BasicResponseHeaders = &h
-	requestInfoBytes, err := json.Marshal(requestInfo)
+	requestInfoBytes, err := json.MarshalIndent(requestInfo, "", "  ")
 	if err != nil {
 		writeServerError(w, err, "reading labels", http.StatusNotImplemented)
 		return
