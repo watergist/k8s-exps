@@ -17,8 +17,6 @@ const (
 )
 
 type Server struct {
-	HttpPorts   []string
-	HttpsPorts  []string
 	TLSPath     string
 	HttpServer  map[string]*http.Server
 	HttpsServer map[string]*http.Server
@@ -27,18 +25,16 @@ type Server struct {
 
 func GetServer(httpPorts, httpsPorts string) *Server {
 	s := Server{
-		HttpPorts:   strings.Split(httpPorts, "~"),
-		HttpsPorts:  strings.Split(httpsPorts, "~"),
 		HttpServer:  map[string]*http.Server{},
 		HttpsServer: map[string]*http.Server{},
 	}
-	for _, p := range s.HttpPorts {
+	for _, p := range strings.Split(httpPorts, "~") {
 		p = strings.TrimSpace(p)
 		if p != "" {
 			s.HttpServer[p] = s.createServer(p, "HTTP")
 		}
 	}
-	for _, p := range s.HttpsPorts {
+	for _, p := range strings.Split(httpsPorts, "~") {
 		p = strings.TrimSpace(p)
 		if p != "" {
 			s.HttpsServer[p] = s.createServer(p, "HTTPS")
@@ -58,11 +54,11 @@ func (s *Server) createServer(port string, protocol string) *http.Server {
 }
 
 func (s *Server) RunServers() {
-	for _, p := range s.HttpPorts {
+	for p := range s.HttpServer {
 		s.WG.Add(1)
 		go s.runHttpServer(p)
 	}
-	for _, p := range s.HttpsPorts {
+	for p := range s.HttpsServer {
 		s.WG.Add(1)
 		go s.runHttpsServer(p)
 	}
