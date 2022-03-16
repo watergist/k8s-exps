@@ -18,7 +18,6 @@ func StartTcpEchoServer() {
 		log.Fatal("Error listening:", err.Error())
 	}
 	defer tcpListener.Close()
-
 	for {
 		conn, err := tcpListener.Accept()
 		if err != nil {
@@ -28,28 +27,28 @@ func StartTcpEchoServer() {
 	}
 }
 
-// Concurrently handle one tcp connection
 func handleNewConnection(conn net.Conn) {
 	defer conn.Close()
 	connectionReader := bufio.NewReader(conn)
-	var requestData, requestDataLine string
+	var requestDataLine string
 	var err error
 	for {
 		requestDataLine, err = connectionReader.ReadString('\n')
+		log.Printf("Received request from client %v : %v\n", conn.RemoteAddr(), requestDataLine)
 		if len(requestDataLine) > 0 {
 			response := fmt.Sprintf(
 				"\"%v\" serving at %v:%v from \"%v\" : %v\n",
 				os.Getenv("POD_NAME"), "0.0.0.0", viper.GetString("TCP_PORT"), os.Getenv("POD_NAMESPACE"), requestDataLine)
 			_, err = conn.Write([]byte(response))
 			if err != nil {
-				log.Println("Error writing request: ", err.Error())
+				log.Println("Error writing to connection: ", err.Error())
 				return
 			}
 		}
 		if err == nil {
 			continue
 		} else if errors.Is(err, io.EOF) {
-			log.Printf("Received request from client %v : %v\n", conn.RemoteAddr(), requestData)
+			log.Printf("Request from client completed %v : %v\n", conn.RemoteAddr(), requestDataLine)
 			break
 		} else if err != nil {
 			log.Println("Error reading request: ", err.Error())
