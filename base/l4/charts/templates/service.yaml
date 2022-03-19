@@ -12,12 +12,12 @@ spec:
     - protocol: TCP
       port: {{ .Values.TCPPort }}
       targetPort: {{ .Values.TCPTargetPort }}
-      name: TCP-{{ .Values.TCPPort }}
+      name: tcp-{{ .Values.TCPPort }}
     {{- end }}
-    {{- if .Values.udpPort }}
+    {{- if .Values.UDPPort }}
     - protocol: UDP
-      port: {{ .Values.udpPort }}
-      targetPort: {{ .Values.udpTargetPort }}
-      name: udp-{{ .Values.udpPort }}
+      port: {{ .Values.UDPPort }}
+      targetPort: {{ .Values.UDPTargetPort }}
+      name: udp-{{ .Values.UDPPort }}
     {{- end }}
   type: LoadBalancer

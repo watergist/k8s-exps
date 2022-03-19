@@ -27,14 +27,18 @@ spec:
             {{- if .Values.TCPTargetPort }}
             - containerPort: {{ .Values.TCPTargetPort }}
               protocol: TCP
-              name: TCP-{{ .Values.TCPTargetPort }}
+              name: tcp-{{ .Values.TCPTargetPort }}
             {{- end }}
-            {{- if .Values.udpTargetPort }}
-            - containerPort: {{ .Values.udpTargetPort }}
+            {{- if .Values.UDPTargetPort }}
+            - containerPort: {{ .Values.UDPTargetPort }}
               protocol: UDP
-              name: udp-{{ .Values.udpTargetPort }}
-          {{- end }}
+              name: udp-{{ .Values.UDPTargetPort }}
+            {{- end }}
           env:
+            - name: UDP_PORT
+              value: {{ .Values.UDPTargetPort | quote }}
+            - name: TCP_PORT
+              value: {{ .Values.TCPTargetPort | quote}}
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:

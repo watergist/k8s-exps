@@ -17,30 +17,30 @@ spec:
         app: p{{.Values.version}}
         {{- range $index,$node := (lookup "v1" "Node" "" "").items }}
         node{{ add $index 1}}: {{ $node.metadata.name }}
-        {{- end }}
+    {{- end }}
     spec:
       containers:
         - name: exp
           image: "watergist/k8s-exps:base-http"
           ports:
             {{- if .Values.HTTPTargetPorts }}
-            {{- range $index,$value := regexSplit "~+" .Values.HTTPTargetPorts -1 }}
+            {{- range $index,$value := regexSplit "~+" (.Values.HTTPTargetPorts | toString) -1 }}
             - containerPort: {{ $value | int }}
-              name: HTTP-{{ $value}}
+              name: http-{{ $value}}
             {{- end }}
             {{- end }}
             {{- if .Values.HTTPSTargetPorts }}
-            {{- range $index,$value := regexSplit "~+" .Values.HTTPSTargetPorts -1 }}
+            {{- range $index,$value := regexSplit "~+" (.Values.HTTPSTargetPorts | toString) -1 }}
             - containerPort: {{ $value | int }}
-              name: HTTPS-{{ $value }}
-            {{- end }}
-            {{- end }}
+              name: https-{{ $value }}
+          {{- end }}
+          {{- end }}
           imagePullPolicy: Always
           env:
             - name: HTTP_PORTS
-              value: {{ .Values.HTTPTargetPorts  }}
+              value: {{ .Values.HTTPTargetPorts | quote }}
             - name: HTTPS_PORTS
-              value: {{ .Values.HTTPSTargetPorts }}
+              value: {{ .Values.HTTPSTargetPorts | quote }}
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -54,12 +54,12 @@ spec:
             - name: TLS_KEYPAIR_PATH
               value: &keyPairPath /wd/config/tls
           volumeMounts:
-          - name: pod-info
-            mountPath: *propertiesPath
-          {{- if .Values.tlsSecret }}
-          - name: tls-secrets
-            mountPath: *keyPairPath
-          {{- end }}
+            - name: pod-info
+              mountPath: *propertiesPath
+            {{- if .Values.tlsSecret }}
+            - name: tls-secrets
+              mountPath: *keyPairPath
+            {{- end }}
       volumes:
         {{- if .Values.tlsSecret }}
         - name: tls-secrets
