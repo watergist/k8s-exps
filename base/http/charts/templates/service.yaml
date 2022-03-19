@@ -1,6 +1,6 @@
-{{- $httpContainerPorts := regexSplit "~+" .Values.httpTargetPorts -1 }}
-{{- $httpsContainerPorts := regexSplit "~+" .Values.httpsTargetPorts -1 }}
-{{- if or .Values.httpPorts .Values.httpsPorts }}
+{{- $HTTPContainerPorts := regexSplit "~+" .Values.HTTPTargetPorts -1 }}
+{{- $HTTPSContainerPorts := regexSplit "~+" .Values.HTTPSTargetPorts -1 }}
+{{- if or .Values.HTTPPorts .Values.HTTPSPorts }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -11,20 +11,20 @@ spec:
   selector:
     app: p{{.Values.version}}
   ports:
-    {{- if .Values.httpPorts }}
-    {{- range $index,$value := regexSplit "~+" .Values.httpPorts -1 }}
+    {{- if .Values.HTTPPorts }}
+    {{- range $index,$value := regexSplit "~+" .Values.HTTPPorts -1 }}
     - protocol: TCP
       port: {{ $value | int }}
-      targetPort: {{ index $httpContainerPorts $index }}
-      name: http-{{ $value }}
+      targetPort: {{ index $HTTPContainerPorts $index }}
+      name: HTTP-{{ $value }}
     {{- end }}
     {{- end }}
-    {{- if .Values.httpsPorts }}
-    {{- range $index,$value := regexSplit "~+" .Values.httpsPorts -1 }}
+    {{- if .Values.HTTPSPorts }}
+    {{- range $index,$value := regexSplit "~+" .Values.HTTPSPorts -1 }}
     - protocol: TCP
       port: {{ $value | int }}
-      targetPort: {{ index $httpsContainerPorts $index }}
-      name: https-{{ $value }}
+      targetPort: {{ index $HTTPSContainerPorts $index }}
+      name: HTTPS-{{ $value }}
     {{- end }}
     {{- end }}
   type: LoadBalancer

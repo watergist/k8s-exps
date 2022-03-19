@@ -16,8 +16,8 @@ type Server struct {
 
 func (s *Server) PodName(w http.ResponseWriter, _ *http.Request) {
 	_, err := w.Write([]byte(fmt.Sprintf(
-		"Serving at %v:%v \"%v\" from \"%v\"\n",
-		s.ListenerProperties.Address, s.ListenerProperties.Port, os.Getenv("POD_NAME"), os.Getenv("POD_NAMESPACE"))))
+		"\"%v\" Serving at %v:%v from \"%v\"\n",
+		os.Getenv("POD_NAME"), s.ListenerProperties.Address, s.ListenerProperties.Port, os.Getenv("POD_NAMESPACE"))))
 	if err != nil {
 		log.Printf("Error: %v\n", err)
 	}

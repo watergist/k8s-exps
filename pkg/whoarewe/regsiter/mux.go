@@ -20,15 +20,15 @@ func RegisterEndpoints(mux *http.ServeMux, listenerProperties *listener.Listener
 	mux.HandleFunc("/whoami/wide", whoamiEndpoints.RequestInfo)
 }
 
-func EnableDualLogging(mux *http.ServeMux) http.Handler {
+func EnableDualLogging(mux *http.ServeMux, address string) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			log.Printf("request for %v\n", r.URL.Path)
+			log.Printf("request at %v for %v\n", address, r.URL.Path)
 			start := time.Now()
 			w.Header().Add("a-forwArDed-by", "whoarewe")
 			w.Header().Add("a-forwArDed-by", os.Getenv("POD_NAME"))
 			mux.ServeHTTP(w, r)
-			log.Printf("served %v in %v milliseconds", r.URL.Path, time.Now().Sub(start).Milliseconds())
+			log.Printf("served at %v for %v in %v milliseconds", address, r.URL.Path, time.Now().Sub(start).Milliseconds())
 		},
 	)
 }

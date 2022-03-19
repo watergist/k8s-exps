@@ -9,10 +9,12 @@ import (
 	"log"
 	"net"
 	"os"
+	"sync"
 )
 
-func StartTcpEchoServer() {
-	log.Println("Starting tcp server at:", viper.GetString("TCP_PORT"))
+func StartTCPEchoServer(wg *sync.WaitGroup) {
+	defer wg.Done()
+	log.Println("Starting TCP server at:", viper.GetString("TCP_PORT"))
 	tcpListener, err := net.Listen("tcp", "0.0.0.0:"+viper.GetString("TCP_PORT"))
 	if err != nil {
 		log.Fatal("Error listening:", err.Error())
@@ -23,21 +25,23 @@ func StartTcpEchoServer() {
 		if err != nil {
 			log.Fatal("Error accepting: ", err.Error())
 		}
-		go handleNewConnection(conn)
+		log.Printf("Received TCP request from client %v\n", conn.RemoteAddr())
+		go handleNewTCPConnection(conn)
 	}
+
 }
 
-func handleNewConnection(conn net.Conn) {
+func handleNewTCPConnection(conn net.Conn) {
 	defer conn.Close()
 	connectionReader := bufio.NewReader(conn)
 	var requestDataLine string
 	var err error
 	for {
 		requestDataLine, err = connectionReader.ReadString('\n')
-		log.Printf("Received request from client %v : %v\n", conn.RemoteAddr(), requestDataLine)
+		log.Printf("Received TCP data from client %v : %v\n", conn.RemoteAddr(), requestDataLine)
 		if len(requestDataLine) > 0 {
 			response := fmt.Sprintf(
-				"\"%v\" serving at %v:%v from \"%v\" : %v\n",
+				"\"%v\" serving TCP at %v:%v from \"%v\" : %v\n",
 				os.Getenv("POD_NAME"), "0.0.0.0", viper.GetString("TCP_PORT"), os.Getenv("POD_NAMESPACE"), requestDataLine)
 			_, err = conn.Write([]byte(response))
 			if err != nil {
@@ -45,9 +49,7 @@ func handleNewConnection(conn net.Conn) {
 				return
 			}
 		}
-		if err == nil {
-			continue
-		} else if errors.Is(err, io.EOF) {
+		if errors.Is(err, io.EOF) {
 			log.Printf("Request from client completed %v : %v\n", conn.RemoteAddr(), requestDataLine)
 			break
 		} else if err != nil {

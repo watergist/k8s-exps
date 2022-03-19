@@ -2,6 +2,7 @@ package multiserver
 
 import (
 	"context"
+	"github.com/spf13/viper"
 	"github.com/watergist/k8s-manifests/pkg/whoarewe/listener"
 	"github.com/watergist/k8s-manifests/pkg/whoarewe/regsiter"
 	"log"
@@ -18,26 +19,27 @@ const (
 
 type Server struct {
 	TLSPath     string
-	HttpServer  map[string]*http.Server
-	HttpsServer map[string]*http.Server
+	HTTPServer  map[string]*http.Server
+	HTTPSServer map[string]*http.Server
 	WG          sync.WaitGroup
 }
 
-func GetServer(httpPorts, httpsPorts string) *Server {
+func GetServer() *Server {
 	s := Server{
-		HttpServer:  map[string]*http.Server{},
-		HttpsServer: map[string]*http.Server{},
+		HTTPServer:  map[string]*http.Server{},
+		HTTPSServer: map[string]*http.Server{},
+		TLSPath:     viper.GetString("TLS_KEYPAIR_PATH"),
 	}
-	for _, p := range strings.Split(httpPorts, "~") {
+	for _, p := range strings.Split(viper.GetString("HTTP_PORTS"), "~") {
 		p = strings.TrimSpace(p)
 		if p != "" {
-			s.HttpServer[p] = s.createServer(p, "HTTP")
+			s.HTTPServer[p] = s.createServer(p, "HTTP")
 		}
 	}
-	for _, p := range strings.Split(httpsPorts, "~") {
+	for _, p := range strings.Split(viper.GetString("HTTPS_PORTS"), "~") {
 		p = strings.TrimSpace(p)
 		if p != "" {
-			s.HttpsServer[p] = s.createServer(p, "HTTPS")
+			s.HTTPSServer[p] = s.createServer(p, "HTTPS")
 		}
 	}
 	return &s
@@ -50,23 +52,23 @@ func (s *Server) createServer(port string, protocol string) *http.Server {
 		Port:     port,
 		Protocol: protocol,
 	})
-	return &http.Server{Addr: "0.0.0.0:" + port, Handler: regsiter.EnableDualLogging(mux)}
+	return &http.Server{Addr: "0.0.0.0:" + port, Handler: regsiter.EnableDualLogging(mux, "0.0.0.0:"+port)}
 }
 
 func (s *Server) RunServers() {
-	for p := range s.HttpServer {
+	for p := range s.HTTPServer {
 		s.WG.Add(1)
-		go s.runHttpServer(p)
+		go s.runHTTPServer(p)
 	}
-	for p := range s.HttpsServer {
+	for p := range s.HTTPSServer {
 		s.WG.Add(1)
-		go s.runHttpsServer(p)
+		go s.runHTTPSServer(p)
 	}
 }
 
-func (s *Server) runHttpServer(port string) {
+func (s *Server) runHTTPServer(port string) {
 	log.Printf("Listening HTTP on %v \n", port)
-	err := s.HttpServer[port].ListenAndServe()
+	err := s.HTTPServer[port].ListenAndServe()
 	if err != nil {
 		s.WG.Done()
 		log.Fatalf("Error serving on this HTTP port %v: %v", port, err.Error())
@@ -74,9 +76,9 @@ func (s *Server) runHttpServer(port string) {
 	}
 }
 
-func (s *Server) runHttpsServer(port string) {
+func (s *Server) runHTTPSServer(port string) {
 	log.Printf("Listening HTTPS on %v \n", port)
-	err := s.HttpsServer[port].ListenAndServeTLS(path.Join(s.TLSPath, certificateName), path.Join(s.TLSPath, privateKeyName))
+	err := s.HTTPSServer[port].ListenAndServeTLS(path.Join(s.TLSPath, certificateName), path.Join(s.TLSPath, privateKeyName))
 	if err != nil {
 		s.WG.Done()
 		log.Fatalf("Error serving on this HTTPS port %v: %v", port, err.Error())
@@ -86,16 +88,16 @@ func (s *Server) runHttpsServer(port string) {
 
 func (s *Server) StopServer(port string) error {
 	log.Printf("ShuttingDown server on %v \n", port)
-	if _, ok := s.HttpServer[port]; ok {
-		err := s.HttpServer[port].Shutdown(context.TODO())
+	if _, ok := s.HTTPServer[port]; ok {
+		err := s.HTTPServer[port].Shutdown(context.TODO())
 		if err != nil {
 			log.Fatalf("Error shuttingDown server on this port %v: %v", port, err.Error())
 			return err
 		}
 		s.WG.Done()
 	}
-	if _, ok := s.HttpsServer[port]; ok {
-		err := s.HttpsServer[port].Shutdown(context.TODO())
+	if _, ok := s.HTTPSServer[port]; ok {
+		err := s.HTTPSServer[port].Shutdown(context.TODO())
 		if err != nil {
 			log.Fatalf("Error shuttingDown server on this port %v: %v", port, err.Error())
 			return err

@@ -23,24 +23,24 @@ spec:
         - name: exp
           image: "watergist/k8s-exps:base-http"
           ports:
-            {{- if .Values.httpTargetPorts }}
-            {{- range $index,$value := regexSplit "~+" .Values.httpTargetPorts -1 }}
+            {{- if .Values.HTTPTargetPorts }}
+            {{- range $index,$value := regexSplit "~+" .Values.HTTPTargetPorts -1 }}
             - containerPort: {{ $value | int }}
-              name: http-{{ $value}}
+              name: HTTP-{{ $value}}
             {{- end }}
             {{- end }}
-            {{- if .Values.httpsTargetPorts }}
-            {{- range $index,$value := regexSplit "~+" .Values.httpsTargetPorts -1 }}
+            {{- if .Values.HTTPSTargetPorts }}
+            {{- range $index,$value := regexSplit "~+" .Values.HTTPSTargetPorts -1 }}
             - containerPort: {{ $value | int }}
-              name: https-{{ $value }}
+              name: HTTPS-{{ $value }}
             {{- end }}
             {{- end }}
           imagePullPolicy: Always
           env:
             - name: HTTP_PORTS
-              value: {{ .Values.httpTargetPorts  }}
+              value: {{ .Values.HTTPTargetPorts  }}
             - name: HTTPS_PORTS
-              value: {{ .Values.httpsTargetPorts }}
+              value: {{ .Values.HTTPSTargetPorts }}
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:

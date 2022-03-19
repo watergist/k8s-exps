@@ -8,11 +8,11 @@ spec:
   selector:
     app: p{{.Values.version}}
   ports:
-    {{- if .Values.tcpPort }}
+    {{- if .Values.TCPPort }}
     - protocol: TCP
-      port: {{ .Values.tcpPort }}
-      targetPort: {{ .Values.tcpTargetPort }}
-      name: tcp-{{ .Values.tcpPort }}
+      port: {{ .Values.TCPPort }}
+      targetPort: {{ .Values.TCPTargetPort }}
+      name: TCP-{{ .Values.TCPPort }}
     {{- end }}
     {{- if .Values.udpPort }}
     - protocol: UDP

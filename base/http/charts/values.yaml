@@ -1,9 +1,9 @@
 version: 1
 subset: ""
-httpTargetPorts: ""
-httpsTargetPorts: ""
+HTTPTargetPorts: ""
+HTTPSTargetPorts: ""
 
-httpPorts: ""
-httpsPorts: ""
+HTTPPorts: ""
+HTTPSPorts: ""
 
 tlsSecret: ""

@@ -24,10 +24,10 @@ spec:
           image: "watergist/k8s-exps:base-l4"
           imagePullPolicy: Always
           ports:
-            {{- if .Values.tcpTargetPort }}
-            - containerPort: {{ .Values.tcpTargetPort }}
+            {{- if .Values.TCPTargetPort }}
+            - containerPort: {{ .Values.TCPTargetPort }}
               protocol: TCP
-              name: tcp-{{ .Values.tcpTargetPort }}
+              name: TCP-{{ .Values.TCPTargetPort }}
             {{- end }}
             {{- if .Values.udpTargetPort }}
             - containerPort: {{ .Values.udpTargetPort }}
