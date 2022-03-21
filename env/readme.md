@@ -1,9 +1,17 @@
-Setup your environment as follows
-
-```shell
-cd env/a00-kind
-bash -ex install.sh
-kind create cluster --name isto
-## Mess with your kubeConfig here
-IP_SET_NUMBER=1 CLUSTER_NAME=isto bash -ex metallb.sh
-```
+# KIND cluster
+```cd env/kind```
+* Install KIND cluster deployment tool
+    ```shell
+    bash -ex install.sh
+    ```
+  
+* Create a cluster
+  ```shell
+  kind create cluster --name k8s-exps
+  # KUBECONFIG will be updated by itself
+  ```
+  
+* Enable IP for loadBalancers (works only with KIND)
+  ```
+  IP_SET_NUMBER=3 CLUSTER_NAME=k8s-exps bash -ex metallb.sh
+  ```
