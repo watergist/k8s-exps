@@ -27,4 +27,4 @@ jobs:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           charts_dir: "*/*"
-          config: helm-chart-releaser.yaml
+          config: docs/helm-chart-releaser.yaml
