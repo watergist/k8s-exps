@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - main
-      - pod-manifest
+      - pod_manifest
 
 jobs:
   release:
