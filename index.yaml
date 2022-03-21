@@ -1,0 +1,25 @@
+apiVersion: v1
+entries:
+  k8s-exps-base-http:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-03-21T11:53:16.858876125Z"
+    description: Base charts for experimenting with k8s
+    digest: 461211109b97d837189a64ef93aad4f199f3764ec0500c1eb22812e1805485b6
+    name: k8s-exps-base-http
+    type: application
+    urls:
+    - https://github.com/watergist/k8s-exps/releases/download/k8s-exps-base-http-0.1.1/k8s-exps-base-http-0.1.1.tgz
+    version: 0.1.1
+  k8s-exps-base-l4:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-03-21T11:53:17.021210598Z"
+    description: Base charts for experimenting with k8s
+    digest: ac491ed3ffed6de441708e4b9c6a63800dba1f814a81398e69339ebd1b02cfd6
+    name: k8s-exps-base-l4
+    type: application
+    urls:
+    - https://github.com/watergist/k8s-exps/releases/download/k8s-exps-base-l4-0.1.5/k8s-exps-base-l4-0.1.5.tgz
+    version: 0.1.5
+generated: "2022-03-21T11:53:16.605856201Z"
