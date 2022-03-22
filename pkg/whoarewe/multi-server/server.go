@@ -2,6 +2,7 @@ package multiserver
 
 import (
 	"context"
+	"crypto/tls"
 	"github.com/spf13/viper"
 	"github.com/watergist/k8s-manifests/pkg/whoarewe/listener"
 	"github.com/watergist/k8s-manifests/pkg/whoarewe/regsiter"
@@ -19,6 +20,7 @@ const (
 
 type Server struct {
 	TLSPath     string
+	Certificate *tls.Certificate
 	HTTPServer  map[string]*http.Server
 	HTTPSServer map[string]*http.Server
 	WG          sync.WaitGroup
@@ -78,7 +80,15 @@ func (s *Server) runHTTPServer(port string) {
 
 func (s *Server) runHTTPSServer(port string) {
 	log.Printf("Listening HTTPS on %v \n", port)
-	err := s.HTTPSServer[port].ListenAndServeTLS(path.Join(s.TLSPath, certificateName), path.Join(s.TLSPath, privateKeyName))
+	var tlsKeyPath, tlsCertPath string
+	if s.Certificate == nil {
+		tlsCertPath = path.Join(s.TLSPath, certificateName)
+		tlsKeyPath = path.Join(s.TLSPath, privateKeyName)
+	} else {
+		cfg := &tls.Config{Certificates: []tls.Certificate{*s.Certificate}}
+		s.HTTPSServer[port].TLSConfig = cfg
+	}
+	err := s.HTTPSServer[port].ListenAndServeTLS(tlsCertPath, tlsKeyPath)
 	if err != nil {
 		s.WG.Done()
 		log.Fatalf("Error serving on this HTTPS port %v: %v", port, err.Error())

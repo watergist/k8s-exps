@@ -9,11 +9,12 @@ import (
 func main() {
 	log.Println("Application Started")
 	viper.AutomaticEnv()
-	//viper.SetDefault("HTTP_PORTS",1080)
-	//viper.SetDefault("HTTPS_PORTS",1443)
-	viper.SetDefault("TLS_KEYPAIR_PATH", "base/http/testdata")
+	viper.SetDefault("HTTP_PORTS", 1080)
+	viper.SetDefault("HTTPS_PORTS", 1443)
+	viper.SetDefault("TLS_KEYPAIR_PATH", "base/http/app/testdata")
 
 	s := multiserver.GetServer()
+	registerLocalCertificate(s)
 	s.RunServers()
 	s.WG.Wait()
 	log.Println("Application Terminated")

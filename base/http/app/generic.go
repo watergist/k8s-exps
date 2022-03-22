@@ -1,5 +1,12 @@
-//go:build !test
+//go:build !local
 
 package main
 
-const TLSPath = "/config/tls"
+import (
+	_ "embed"
+	multiserver "github.com/watergist/k8s-manifests/pkg/whoarewe/multi-server"
+)
+
+func registerLocalCertificate(s *multiserver.Server) {
+	// pass
+}
