@@ -16,7 +16,7 @@ RUN find ./ -type f \
 FROM build-dependencies as builder
 WORKDIR /code
 COPY --from=copyfiles /code ./
-RUN go build -o /app/exp /code/cmd/app/main.go
+RUN go build -o /app/exp /code/cmd/app
 
 FROM ubuntu:20.04
 WORKDIR /wd
