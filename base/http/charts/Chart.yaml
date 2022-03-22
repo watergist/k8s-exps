@@ -1,0 +1,6 @@
+apiVersion: v2
+name: base-http
+description: Base charts for experimenting with k8s
+type: application
+version: 0.0.1
+appVersion: "1.16.0"

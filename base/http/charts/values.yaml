@@ -1,0 +1,9 @@
+version: 1
+subset: ""
+HTTPTargetPorts: ""
+HTTPSTargetPorts: ""
+
+HTTPPorts: ""
+HTTPSPorts: ""
+
+tlsSecret: ""
