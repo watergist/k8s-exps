@@ -1,8 +1,7 @@
 # KIND cluster
-```cd env/kind```
 * Install KIND cluster deployment tool
     ```shell
-    bash -ex install.sh
+    bash -ex env/kind/install.sh
     ```
   
 * Create a cluster
@@ -13,5 +12,5 @@
   
 * Enable IP for loadBalancers (works only with KIND)
   ```
-  IP_SET_NUMBER=3 CLUSTER_NAME=k8s-exps bash -ex metallb.sh
+  IP_SET_NUMBER=3 CLUSTER_NAME=k8s-exps bash -ex env/kind/metallb.sh
   ```
