@@ -10,7 +10,7 @@ ARG APP_DIR
 COPY $APP_DIR/ /code/cmd/
 COPY pkg/ /code/pkg/
 RUN find ./ -type f \
-    \! -name "*.go" \! -name "*.mod" \! -name "*.sum" \
+    \! -name "*.go" \! -name "*.mod" \! -name "*.sum" \! -name "*.key" \! -name "*.crt" \
     -delete
 
 FROM build-dependencies as builder
