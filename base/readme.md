@@ -35,7 +35,7 @@ cd .. && rm -r tls
 ```shell
 docker buildx build --push . -t watergist/k8s-exps:base-http --build-arg APP_DIR="base/http"
 
-helm3 upgrade --install --set HTTPPorts="8080~9090~7070",HTTPSPorts="8081~9091~7071",HTTPTargetPorts="3000~4000~5000",HTTPSTargetPorts="3001~4001~5001" --set tlsSecret="tls-secret" --set version=${VERSION:-1} httpv1 k8s-exps/base-http --version 0.0.2
+helm3 upgrade --install --set HTTPPorts="8080~9090~7070",HTTPSPorts="8081~9091~7071",HTTPTargetPorts="3000~4000~5000",HTTPSTargetPorts="3001~4001~5001" --set tlsSecret="tls-secret" --set version=${VERSION:-1} httpv1 k8s-exps/base-http --version 0.0.3
 
 # to uninstall all the releases
 helm3 list | grep base-http | awk '{print $1}' | xargs helm3 uninstall
@@ -46,9 +46,9 @@ helm3 list | grep base-http | awk '{print $1}' | xargs helm3 uninstall
 docker buildx build --push . -t watergist/k8s-exps:base-l4 --build-arg APP_DIR="base/l4"
 
 # for tcp
-helm3 upgrade --install --set TCPTargetPort="3001",TCPPort="8080" --set version=${VERSION:-1} tcpv1 k8s-exps/base-l4 --version 0.0.2
+helm3 upgrade --install --set TCPTargetPort="3001",TCPPort="8080" --set version=${VERSION:-1} tcpv1 k8s-exps/base-l4 --version 0.0.3
 # for udp
-helm3 upgrade --install --set UDPTargetPort="3001",UDPPort="8080" --set version=${VERSION:-1} udpv1 k8s-exps/base-l4 --version 0.0.2
+helm3 upgrade --install --set UDPTargetPort="3001",UDPPort="8080" --set version=${VERSION:-1} udpv1 k8s-exps/base-l4 --version 0.0.3
 
 # to uninstall all the releases
 helm3 list | grep base-l4 | awk '{print $1}' | xargs helm3 uninstall
