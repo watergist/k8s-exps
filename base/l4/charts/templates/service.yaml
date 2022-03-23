@@ -11,13 +11,13 @@ spec:
     {{- if .Values.TCPPort }}
     - protocol: TCP
       port: {{ .Values.TCPPort }}
-      targetPort: {{ .Values.TCPTargetPort }}
+      targetPort: {{ if .Values.TCPTargetPort }} {{ .Values.TCPTargetPort | int }} {{ else }} {{ .Values.TCPPort | int }} {{ end }}
       name: tcp-{{ .Values.TCPPort }}
     {{- end }}
     {{- if .Values.UDPPort }}
     - protocol: UDP
       port: {{ .Values.UDPPort }}
-      targetPort: {{ .Values.UDPTargetPort }}
+      targetPort: {{ if .Values.UDPTargetPort }} {{ .Values.UDPTargetPort | int }} {{ else }} {{ .Values.UDPPort | int }} {{ end }}
       name: udp-{{ .Values.UDPPort }}
     {{- end }}
   type: LoadBalancer

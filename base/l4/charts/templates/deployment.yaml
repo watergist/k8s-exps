@@ -1,7 +1,11 @@
+{{  $udpPort := .Values.UDPPort }}
+  {{  $tcpPort := .Values.TCPPort }}
+  {{ if .Values.UDPTargetPort }} {{ $udpPort = .Values.UDPTargetPort }} {{ end }}
+  {{ if .Values.TCPTargetPort }} {{ $tcpPort = .Values.TCPTargetPort }} {{ end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: d{{ .Values.version }}{{ (include "getSubset" .) }}
+  name: d{{ .Values.version }}{{- if .Values.subset }}{{- print "-" .Values.subset }}{{- end }}
   labels:
     app: d{{.Values.version}}
 spec:
@@ -24,21 +28,21 @@ spec:
           image: "watergist/k8s-exps:base-l4"
           imagePullPolicy: Always
           ports:
-            {{- if .Values.TCPTargetPort }}
-            - containerPort: {{ .Values.TCPTargetPort }}
+            {{- if $tcpPort }}
+            - containerPort: {{ $tcpPort }}
               protocol: TCP
-              name: tcp-{{ .Values.TCPTargetPort }}
+              name: tcp-{{ $tcpPort }}
             {{- end }}
-            {{- if .Values.UDPTargetPort }}
-            - containerPort: {{ .Values.UDPTargetPort }}
+            {{- if $udpPort }}
+            - containerPort: {{ $udpPort }}
               protocol: UDP
-              name: udp-{{ .Values.UDPTargetPort }}
-            {{- end }}
+              name: udp-{{ $udpPort }}
+          {{- end }}
           env:
             - name: UDP_PORT
-              value: {{ .Values.UDPTargetPort | quote }}
+              value: {{ $udpPort | quote }}
             - name: TCP_PORT
-              value: {{ .Values.TCPTargetPort | quote}}
+              value: {{ $tcpPort | quote}}
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -47,18 +51,3 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: POD_PROPERTIES_PATH
-              value: &propertiesPath /config/pod-info
-          volumeMounts:
-            - name: pod-info
-              mountPath: *propertiesPath
-      volumes:
-        - name: pod-info
-          downwardAPI:
-            items:
-              - path: "labels"
-                fieldRef:
-                  fieldPath: metadata.labels
-              - path: "annotations"
-                fieldRef:
-                  fieldPath: metadata.annotations

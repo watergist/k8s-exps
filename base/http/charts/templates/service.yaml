@@ -1,5 +1,5 @@
-{{- $HTTPContainerPorts := regexSplit "~+" (.Values.HTTPTargetPorts | toString) -1 }}
-{{- $HTTPSContainerPorts := regexSplit "~+" (.Values.HTTPSTargetPorts | toString) -1 }}
+{{- $HTTPTargetPortsArray := regexSplit "~+" (.Values.HTTPTargetPorts | toString) -1 }}
+{{- $HTTPSTargetPortsArray := regexSplit "~+" (.Values.HTTPSTargetPorts | toString) -1 }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -14,7 +14,7 @@ spec:
     {{- range $index,$value := regexSplit "~+" (.Values.HTTPPorts | toString) -1 }}
     - protocol: TCP
       port: {{ $value | int }}
-      targetPort: {{ index $HTTPContainerPorts $index }}
+      targetPort: {{ if $.Values.HTTPTargetPorts }} {{ index $HTTPTargetPortsArray $index | int }} {{ else }} {{ $value | int }} {{ end }}
       name: http-{{ $value }}
     {{- end }}
     {{- end }}
@@ -22,7 +22,7 @@ spec:
     {{- range $index,$value := regexSplit "~+" (.Values.HTTPSPorts | toString) -1 }}
     - protocol: TCP
       port: {{ $value | int }}
-      targetPort: {{ index $HTTPSContainerPorts $index }}
+      targetPort: {{ if $.Values.HTTPSTargetPorts }} {{ index $HTTPSTargetPortsArray $index | int }} {{ else }} {{ $value | int }} {{ end }}
       name: https-{{ $value }}
     {{- end }}
   {{- end }}

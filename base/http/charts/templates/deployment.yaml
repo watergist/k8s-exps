@@ -1,7 +1,11 @@
+{{  $httpPort := .Values.HTTPPorts }}
+  {{  $httpsPort := .Values.HTTPSPorts }}
+  {{ if .Values.HTTPTargetPorts }} {{ $httpPort = .Values.HTTPTargetPorts }} {{ end }}
+  {{ if .Values.HTTPSTargetPorts }} {{ $httpsPort = .Values.HTTPSTargetPorts }} {{ end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: d{{ .Values.version }}{{ (include "getSubset" .) }}
+  name: d{{ .Values.version }}{{- if .Values.subset }}{{- print "-" .Values.subset }}{{- end }}
   labels:
     app: d{{.Values.version}}
 spec:
@@ -23,14 +27,14 @@ spec:
         - name: exp
           image: "watergist/k8s-exps:base-http"
           ports:
-            {{- if .Values.HTTPTargetPorts }}
-            {{- range $index,$value := regexSplit "~+" (.Values.HTTPTargetPorts | toString) -1 }}
+            {{- if $httpPort }}
+            {{- range $index,$value := regexSplit "~+" ($httpPort | toString) -1 }}
             - containerPort: {{ $value | int }}
               name: http-{{ $value}}
             {{- end }}
             {{- end }}
-            {{- if .Values.HTTPSTargetPorts }}
-            {{- range $index,$value := regexSplit "~+" (.Values.HTTPSTargetPorts | toString) -1 }}
+            {{- if $httpsPort }}
+            {{- range $index,$value := regexSplit "~+" ($httpsPort | toString) -1 }}
             - containerPort: {{ $value | int }}
               name: https-{{ $value }}
           {{- end }}
@@ -38,9 +42,9 @@ spec:
           imagePullPolicy: Always
           env:
             - name: HTTP_PORTS
-              value: {{ .Values.HTTPTargetPorts | quote }}
+              value: {{ $httpPort | quote }}
             - name: HTTPS_PORTS
-              value: {{ .Values.HTTPSTargetPorts | quote }}
+              value: {{ $httpsPort | quote }}
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:
@@ -52,14 +56,14 @@ spec:
             - name: POD_PROPERTIES_PATH
               value: &propertiesPath /wd/config/pod-info
             - name: TLS_KEYPAIR_PATH
-              value: &keyPairPath /wd/config/tls
+              value: &keyPairPath {{ if .Values.tlsSecret }} /wd/config/tls {{ end }}
           volumeMounts:
             - name: pod-info
               mountPath: *propertiesPath
             {{- if .Values.tlsSecret }}
             - name: tls-secrets
               mountPath: *keyPairPath
-            {{- end }}
+      {{- end }}
       volumes:
         {{- if .Values.tlsSecret }}
         - name: tls-secrets
