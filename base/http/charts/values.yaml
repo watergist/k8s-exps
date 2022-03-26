@@ -7,3 +7,6 @@ HTTPPorts: ""
 HTTPSPorts: ""
 
 tlsSecret: ""
+
+enableService: true
+enableDeployment: true

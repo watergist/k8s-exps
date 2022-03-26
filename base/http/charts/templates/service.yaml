@@ -1,5 +1,6 @@
-{{- $HTTPTargetPortsArray := regexSplit "~+" (.Values.HTTPTargetPorts | toString) -1 }}
-{{- $HTTPSTargetPortsArray := regexSplit "~+" (.Values.HTTPSTargetPorts | toString) -1 }}
+{{ if .Values.enableService }}
+  {{- $HTTPTargetPortsArray := regexSplit "~+" (.Values.HTTPTargetPorts | toString) -1 }}
+  {{- $HTTPSTargetPortsArray := regexSplit "~+" (.Values.HTTPSTargetPorts | toString) -1 }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -24,6 +25,8 @@ spec:
       port: {{ $value | int }}
       targetPort: {{ if $.Values.HTTPSTargetPorts }} {{ index $HTTPSTargetPortsArray $index | int }} {{ else }} {{ $value | int }} {{ end }}
       name: https-{{ $value }}
-    {{- end }}
+  {{- end }}
   {{- end }}
   type: LoadBalancer
+
+  {{end}}

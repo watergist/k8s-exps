@@ -1,3 +1,4 @@
+{{ if .Values.enableDeployment }}
 {{  $udpPort := .Values.UDPPort }}
   {{  $tcpPort := .Values.TCPPort }}
   {{ if .Values.UDPTargetPort }} {{ $udpPort = .Values.UDPTargetPort }} {{ end }}
@@ -51,3 +52,4 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+  {{end}}

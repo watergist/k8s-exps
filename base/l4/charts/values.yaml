@@ -5,3 +5,6 @@ UDPTargetPort: ""
 
 TCPPort: ""
 UDPPort: ""
+
+enableDeployment: true
+enableService: true
