@@ -5,3 +5,8 @@ type Listener struct {
 	Port     string
 	Protocol string
 }
+
+type Server struct {
+	UpstreamTimeout    int
+	ListenerProperties *Listener
+}

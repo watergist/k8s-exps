@@ -1,7 +1,7 @@
 package wide
 
 import (
-	"github.com/watergist/k8s-manifests/pkg/whoarewe/listener"
+	"github.com/watergist/k8s-manifests/pkg/server/listener"
 	"os"
 	"path"
 )

@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/spf13/viper"
-	multiserver "github.com/watergist/k8s-manifests/pkg/whoarewe/multi-server"
+	"github.com/watergist/k8s-manifests/pkg/server/multi-server"
 	"log"
 )
 

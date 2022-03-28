@@ -4,8 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"github.com/spf13/viper"
-	"github.com/watergist/k8s-manifests/pkg/whoarewe/listener"
-	"github.com/watergist/k8s-manifests/pkg/whoarewe/regsiter"
+	"github.com/watergist/k8s-manifests/pkg/server/listener"
 	"log"
 	"net/http"
 	"path"
@@ -49,12 +48,12 @@ func GetServer() *Server {
 
 func (s *Server) createServer(port string, protocol string) *http.Server {
 	mux := http.NewServeMux()
-	regsiter.RegisterEndpoints(mux, &listener.Listener{
+	RegisterEndpoints(mux, &listener.Listener{
 		Address:  "0.0.0.0",
 		Port:     port,
 		Protocol: protocol,
 	})
-	return &http.Server{Addr: "0.0.0.0:" + port, Handler: regsiter.EnableDualLogging(mux, "0.0.0.0:"+port)}
+	return &http.Server{Addr: "0.0.0.0:" + port, Handler: EnableDualLogging(mux, "0.0.0.0:"+port)}
 }
 
 func (s *Server) RunServers() {

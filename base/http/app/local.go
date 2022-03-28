@@ -3,7 +3,7 @@ package main
 import (
 	"crypto/tls"
 	_ "embed"
-	multiserver "github.com/watergist/k8s-manifests/pkg/whoarewe/multi-server"
+	"github.com/watergist/k8s-manifests/pkg/server/multi-server"
 	"log"
 )
 

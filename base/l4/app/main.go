@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/spf13/viper"
-	"github.com/watergist/k8s-manifests/pkg/whoarewe/l4"
+	l42 "github.com/watergist/k8s-manifests/pkg/server/whoarewe/l4"
 	"log"
 	"sync"
 )
@@ -14,8 +14,8 @@ func main() {
 	//viper.SetDefault("UDP_PORT", "31400")
 	wg := sync.WaitGroup{}
 	wg.Add(2)
-	go l4.StartTCPEchoServer(&wg)
-	go l4.StartUDPEchoServer(&wg)
+	go l42.StartTCPEchoServer(&wg)
+	go l42.StartUDPEchoServer(&wg)
 	wg.Wait()
 	log.Println("Application Terminated")
 }
