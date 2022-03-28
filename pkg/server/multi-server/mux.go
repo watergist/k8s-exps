@@ -30,7 +30,7 @@ func EnableDualLogging(mux *http.ServeMux, address string) http.Handler {
 		func(w http.ResponseWriter, r *http.Request) {
 			log.Printf("request at %v for %v\n", address, r.URL.Path)
 			start := time.Now()
-			time.Sleep(time.Second * time.Duration(viper.GetInt("SERVER_FAULT_DELAY")))
+			time.Sleep(time.Millisecond * time.Duration(viper.GetInt("SERVER_FAULT_DELAY")))
 			w.Header().Add("a-forwArDed-by", os.Getenv("POD_NAME"))
 			w.Header().Add("a-FORWArDed-by", os.Getenv("POD_NAMESPACE"))
 			mux.ServeHTTP(w, r)

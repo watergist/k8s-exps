@@ -52,9 +52,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            {{- if .Values.env }}
             {{- range $index,$value := regexSplit "~+" (.Values.env | toString | nospace) -1 }}
             {{- $kv := regexSplit "=+" $value -1 }}
             - name: {{ index $kv 0 }}
-              value: {{ index $kv 1 }}
+              value: {{ index $kv 1 | quote }}
+            {{- end }}
   {{- end }}
   {{end}}

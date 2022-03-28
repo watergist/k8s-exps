@@ -4,9 +4,9 @@
 
 # Add helm repo
 ```shell
-helm3 repo add k8s-exps https://watergist.github.io/k8s-exps
+helm3 repo add k8s-exps https://raw.githubusercontent.com/watergist/k8s-exps/main
 helm3 repo update k8s-exps
-helm3 repo list # k8s-exps will be listed
+helm3 search repo k8s-exps --versions
 ```
 
 # HTTP & HTTPS server
