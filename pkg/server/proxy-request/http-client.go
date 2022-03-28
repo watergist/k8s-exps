@@ -20,19 +20,20 @@ type upstreamRequest struct {
 func request(reqUrl url.URL, requestMethod string) (upstreamRequestData *upstreamRequest) {
 	upstreamRequestData = &upstreamRequest{reqUrl: reqUrl.String()}
 	client := http.Client{
-		Timeout: time.Duration(viper.GetInt("UPSTREAM_TIMEOUT")),
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
 	}
-
+	if viper.GetInt("UPSTREAM_TIMEOUT") != 0 {
+		client.Timeout = time.Duration(viper.GetInt("UPSTREAM_TIMEOUT")) * time.Millisecond
+	}
 	switch requestMethod {
 	case "GET":
 		upstreamRequestData.resp, upstreamRequestData.upstreamErr = client.Get(reqUrl.String())
 	}
 
 	if upstreamRequestData.upstreamErr != nil {
-		upstreamRequestData.errorPlace = "error making connection to upstream"
+		upstreamRequestData.errorPlace = "error making connection to upstream: "
 		log.Printf(upstreamRequestData.errorPlace, upstreamRequestData.upstreamErr)
 		return
 	}
@@ -51,8 +52,14 @@ func makeReq(w *http.ResponseWriter, upstreamRequestData *upstreamRequest) {
 		(*w).Header().Add("X-base-http-upstream-conn-err", upstreamRequestData.upstreamErr.Error())
 		(*w).Header().Add("X-base-http-upstream-conn-error-place", upstreamRequestData.errorPlace)
 	}
-	(*w).WriteHeader(upstreamRequestData.resp.StatusCode)
-	_, err := (*w).Write(upstreamRequestData.body)
+	var err error
+	if upstreamRequestData.resp != nil {
+		(*w).WriteHeader(upstreamRequestData.resp.StatusCode)
+		_, err = (*w).Write(upstreamRequestData.body)
+	} else {
+		(*w).WriteHeader(http.StatusBadGateway)
+		_, err = (*w).Write([]byte("Bad Gateway"))
+	}
 	if err != nil {
 		log.Print("error writing data to downstream: ", err)
 		return

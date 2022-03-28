@@ -58,6 +58,11 @@ spec:
               value: &propertiesPath /wd/config/pod-info
             - name: TLS_KEYPAIR_PATH
               value: &keyPairPath {{ if .Values.tlsSecret }} /wd/config/tls {{ end }}
+            {{- range $index,$value := regexSplit "~+" (.Values.env | toString | nospace) -1 }}
+            {{- $kv := regexSplit "=+" $value -1 }}
+            - name: {{ index $kv 0 }}
+              value: {{ index $kv 1 }}
+            {{- end }}
           volumeMounts:
             - name: pod-info
               mountPath: *propertiesPath
