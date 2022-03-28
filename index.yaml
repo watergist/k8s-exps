@@ -3,6 +3,16 @@ entries:
   base-http:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2022-03-28T16:07:24.545187797Z"
+    description: Base charts for experimenting with k8s
+    digest: 5a403825a71bd9c2f15c22aa1b7a5c286c015abf9b8b9f84cce3dbd494198745
+    name: base-http
+    type: application
+    urls:
+    - https://github.com/watergist/k8s-exps/releases/download/base-http-0.0.5/base-http-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2022-03-26T09:35:27.47859377Z"
     description: Base charts for experimenting with k8s
     digest: 88e7d329fb01cdc7326841cc8fe3d7e84f27ec01068c17700fa7dc5539026ca2
@@ -34,6 +44,16 @@ entries:
   base-l4:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2022-03-28T16:07:24.741362682Z"
+    description: Base charts for experimenting with k8s
+    digest: 0eb2973e2de682d249d128296b82e0970b8b86c799c36bff768c7988a4772317
+    name: base-l4
+    type: application
+    urls:
+    - https://github.com/watergist/k8s-exps/releases/download/base-l4-0.0.5/base-l4-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2022-03-26T09:35:27.642118473Z"
     description: Base charts for experimenting with k8s
     digest: eab6cb0c2e24fc24f74e86edb03177226fa3b6cb570ce67d29cb69b13aa5f785
@@ -62,4 +82,4 @@ entries:
     urls:
     - https://github.com/watergist/k8s-exps/releases/download/base-l4-0.0.2/base-l4-0.0.2.tgz
     version: 0.0.2
-generated: "2022-03-26T09:35:27.642156373Z"
+generated: "2022-03-28T16:07:24.741387082Z"
