@@ -15,6 +15,11 @@ type Server struct {
 }
 
 func (s *Server) RequestHost(w http.ResponseWriter, r *http.Request) {
+	// https://stackoverflow.com/a/51477680
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
 	_, err := w.Write([]byte(fmt.Sprintf("You are at \"%v\"\n", r.Host)))
 	if err != nil {
 		log.Printf("Error: %v\n", err)

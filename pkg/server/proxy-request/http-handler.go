@@ -25,6 +25,9 @@ func (s *Server) Proxy(w http.ResponseWriter, r *http.Request) {
 	if req.Host == "" {
 		req.Host = r.Host
 	}
+	if formData.Get("port") != "" {
+		req.Host = req.Host + ":" + formData.Get("port")
+	}
 	if req.Path == "" {
 		req.Path = "/"
 	}
